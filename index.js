@@ -6,7 +6,7 @@ const convert = require('xml-js');
 
 const app = express();
 
-const droneObjects = [];
+const drones = [];
 
 const distance = (x, y) => {
     const origin = {
@@ -42,18 +42,33 @@ const inNDZ = (drones) => {
 
 axios
     .get('https://assignments.reaktor.com/birdnest/drones')
-    .then(res => {
-        const drones = convert.xml2js(res.data, {
-        compact: true,
-        spaces: 4
-    });
+    .then(res => 
+        {
+            const d = convert.xml2js(res.data, 
+            {
+                compact: true,
+                spaces: 4
+            });
 
-    console.log(inNDZ(droneConstructor(drones.report.capture.drone)));
-    inNDZ(droneConstructor(drones.report.capture.drone)).map(drone => droneObjects.push(drone));
-    });
+            inNDZ(droneConstructor(d.report.capture.drone)).map(drone => 
+                {
+                    axios
+                        .get(`https://assignments.reaktor.com/birdnest/pilots/${drone.serialNumber}`)
+                        .then(res => {
+                            drone.pilot = res.data;
+                            drones.push(drone);
+                            console.log(drone);
+                        });
+                })
+        }
+    );
+
+
+
+
 
 app.get("/birdnest", (request, response) => {
-    response.send("Hello World!");
+    response.json(drones);
 })
 
 
