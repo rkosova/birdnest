@@ -64,7 +64,10 @@ axios
     );
 
 
-
+// TODO:
+// SAVE EACH DRONE IN DATABASE
+// FRONT END -> BACK END (GETS RELEVANT 10 MIN DATA FROM DATABASE SERVER) -> RETURNS TO FRONT END
+//
 
 
 app.get("/birdnest", (request, response) => {
