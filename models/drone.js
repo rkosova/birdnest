@@ -17,7 +17,7 @@ const droneSchema = new mongoose.Schema({
     x: Number,
     y: Number,
     distance: Number,
-    date: String,
+    date: Date,
     pilotId: String,
     firstName: String,
     lastName: String,

@@ -1,8 +1,9 @@
 
+require('dotenv').config();
 const axios = require('axios');
 const express = require('express');
 const convert = require('xml-js');
-
+const Drone = require('./models/drone');
 
 const app = express();
 
@@ -41,6 +42,12 @@ const inNDZ = (drones) => {
 }
 
 
+const deleteTenMin = () => {
+    const tenMinAgo = new Date(Date.now() - (2 * 60 * 1000));
+    Drone.deleteMany({ date: {"$lt": tenMinAgo }}).then(res => console.log(res, tenMinAgo));
+}
+
+
 const getOffenders = () => {
     axios
     .get('https://assignments.reaktor.com/birdnest/drones')
@@ -57,9 +64,23 @@ const getOffenders = () => {
                     axios
                         .get(`https://assignments.reaktor.com/birdnest/pilots/${drone.serialNumber}`)
                         .then(res => {
-                            drone.pilot = res.data;
-                            drones.push(drone);
-                            console.log(drone);
+                            const pilot = res.data;
+                            const newDrone = {
+                                ...drone,
+                                pilotId: pilot.pilotId,
+                                firstName: pilot.firstName,
+                                lastName: pilot.lastName,
+                                phoneNumber: pilot.phoneNumber,
+                                email: pilot.email
+                            };
+
+                            const droneFinal = new Drone(newDrone);
+
+                            droneFinal.save().then(savedDrone => {
+                                drones.push(savedDrone);
+                                console.log(savedDrone);
+                            })
+
                         });
                 })
         }
@@ -67,7 +88,10 @@ const getOffenders = () => {
 }
 
 
-setInterval(getOffenders, 2000);
+setInterval(() => {
+    deleteTenMin();
+    getOffenders();
+    }, 2000);
 
 
 // TODO:
@@ -77,9 +101,28 @@ setInterval(getOffenders, 2000);
 
 
 app.get("/birdnest", (request, response) => {
-    response.json(drones);
+    let data = [];
+    Drone.find().then(res => {
+            data = res;
+            data.sort((a, b) => a.distance - b.distance);
+            const sortedDrones = [];
+            const uniquePID = [];
+            data.map(drone => {
+            if (!uniquePID.includes(drone.pilotId)) {
+                uniquePID.push(drone.pilotId);
+                sortedDrones.push(drone);
+            }
+        });
+
+        response.json(sortedDrones);
+    });
+
+    
+
 })
 
 
-const PORT = 3001;
-app.listen(PORT);
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+});
