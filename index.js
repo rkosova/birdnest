@@ -43,7 +43,7 @@ const inNDZ = (drones) => {
 
 
 const deleteTenMin = () => {
-    const tenMinAgo = new Date(Date.now() - (2 * 60 * 1000));
+    const tenMinAgo = new Date(Date.now() - (10 * 60 * 1000));
     Drone.deleteMany({ date: {"$lt": tenMinAgo }}).then(res => console.log(res, tenMinAgo));
 }
 
