@@ -28,7 +28,8 @@ const droneConstructor = (dronesJSO) => {
             serialNumber: droneO.serialNumber._text,
             x: Number(droneO.positionX._text),
             y: Number(droneO.positionY._text),
-            distance: distance(Number(droneO.positionX._text), Number(droneO.positionY._text))
+            distance: distance(Number(droneO.positionX._text), Number(droneO.positionY._text)),
+            date: new Date()
         }
     ));
 
@@ -40,7 +41,8 @@ const inNDZ = (drones) => {
 }
 
 
-axios
+const getOffenders = () => {
+    axios
     .get('https://assignments.reaktor.com/birdnest/drones')
     .then(res => 
         {
@@ -62,6 +64,10 @@ axios
                 })
         }
     );
+}
+
+
+setInterval(getOffenders, 2000);
 
 
 // TODO:
