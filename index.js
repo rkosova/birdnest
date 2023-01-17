@@ -1,10 +1,12 @@
 require('dotenv').config();
+const cors = require('cors');
 const express = require('express');
 const droneService = require('./services/drone');
 const Drone = require('./models/drone');
 
 
 const app = express();
+app.use(cors());
 
 
 setInterval(() => {
