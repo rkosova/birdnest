@@ -1,7 +1,11 @@
 require('dotenv').config();
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 const convert = require('xml-js');
 const Drone = require('../models/drone');
+
+axiosRetry(axios, { retries: 3 });
+axiosRetry(axios, { retryDelay: axiosRetry.exponentialDelay });
 
 const distance = (x, y) => {
     const origin = {
