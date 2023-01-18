@@ -4,3 +4,4 @@ pwd
 Dockerfile
 fly.toml
 .dockerignore
+/build
