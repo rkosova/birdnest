@@ -3,3 +3,4 @@ pwd
 .env
 Dockerfile
 fly.toml
+.dockerignore
